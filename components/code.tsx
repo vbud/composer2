@@ -1,22 +1,20 @@
 import React from 'react'
-import Editor from '@monaco-editor/react'
+import Editor from './editor'
 
 import { root, paneTitle, codeEditor } from 'styles/Code.css'
 
-export default function Code() {
+export default function Code({
+  onChange,
+  title,
+}: {
+  onChange: (code: string) => void
+  title: string
+}) {
   return (
     <div className={root}>
-      <div className={paneTitle}>Code</div>
+      <div className={paneTitle}>{title}</div>
       <div className={codeEditor}>
-        <Editor
-          height="100%"
-          defaultLanguage="javascript"
-          theme="vs-dark"
-          defaultValue="// some comment"
-          options={{ minimap: { enabled: false } }}
-          // TODO: debounce
-          onChange={(code) => console.log(code)}
-        />
+        <Editor onChange={onChange} />
       </div>
     </div>
   )
