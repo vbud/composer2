@@ -2,8 +2,10 @@ import React from 'react'
 import MonacoEditor from '@monaco-editor/react'
 
 export default function Editor({
+  defaultValue,
   onChange,
 }: {
+  defaultValue?: string
   onChange: (code: string) => void
 }) {
   return (
@@ -15,6 +17,7 @@ export default function Editor({
       onChange={(code) =>
         typeof code === 'string' ? onChange(code) : onChange('')
       }
+      defaultValue={defaultValue}
     />
   )
 }

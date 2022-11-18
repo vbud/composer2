@@ -7,6 +7,9 @@ import Code from 'components/code'
 import Canvas from 'components/canvas'
 import debounce from 'utils/debounce'
 
+const LOCAL_STORAGE_RENDER_CODE = 'code_render'
+const LOCAL_STORAGE_DATA_CODE = 'code_data'
+
 const debounceWait = 500
 
 function transformCode(code: string) {
@@ -17,18 +20,42 @@ function transformCode(code: string) {
 }
 
 export default function Home() {
-  const [renderCode, setRenderCode] = useState<string>('')
-  const [dataCode, setDataCode] = useState<string>('')
+  const [renderCode, setRenderCode] = useState<string>(() => {
+    const localStorageRenderCode =
+      localStorage.getItem(LOCAL_STORAGE_RENDER_CODE) ?? ''
+    let initialRenderCode = ''
+    if (localStorageRenderCode.length > 0) {
+      try {
+        initialRenderCode = transformCode(localStorageRenderCode)
+      } catch {}
+    }
+    return initialRenderCode
+  })
+  const [dataCode, setDataCode] = useState<string>(() => {
+    const localStorageDataCode =
+      localStorage.getItem(LOCAL_STORAGE_DATA_CODE) ?? ''
+    let initialDataCode = ''
+    if (localStorageDataCode.length > 0) {
+      try {
+        initialDataCode = transformCode(localStorageDataCode)
+      } catch {}
+    }
+    return initialDataCode
+  })
 
   const onChangeRenderCode = debounce((code: string) => {
     try {
-      setRenderCode(transformCode(code))
+      const transformed = transformCode(code)
+      setRenderCode(transformed)
+      localStorage.setItem(LOCAL_STORAGE_RENDER_CODE, code)
     } catch {}
   }, debounceWait)
 
   const onChangeDataCode = debounce((code: string) => {
     try {
-      setDataCode(transformCode(code))
+      const transformed = transformCode(code)
+      setDataCode(transformed)
+      localStorage.setItem(LOCAL_STORAGE_DATA_CODE, code)
     } catch {}
   }, debounceWait)
 
@@ -39,8 +66,16 @@ export default function Home() {
         <meta name="description" content="Design + engineering = ❤️" />
       </Head>
 
-      <Code title="Render" onChange={onChangeRenderCode} />
-      <Code title="Data" onChange={onChangeDataCode} />
+      <Code
+        title="Render"
+        defaultValue={localStorage.getItem(LOCAL_STORAGE_RENDER_CODE) ?? ''}
+        onChange={onChangeRenderCode}
+      />
+      <Code
+        title="Data"
+        defaultValue={localStorage.getItem(LOCAL_STORAGE_DATA_CODE) ?? ''}
+        onChange={onChangeDataCode}
+      />
       <Canvas dataCode={dataCode} renderCode={renderCode} />
     </div>
   )
